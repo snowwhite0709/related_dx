@@ -1,0 +1,14 @@
+Variables.CreateNewDatatable InputTable: { ^['品番', '品名', '発注単位'], [$'''0001''', $'''ボールペン''', $'''1箱'''], [$'''0002''', $'''クリアファイル''', $'''1パック'''], [$'''0003''', $'''A4コピー用紙''', $'''500枚'''] } DataTable=> DataTable
+Variables.ModifyDataTableItem DataTable: DataTable ColumnNameOrIndex: $'''品名''' RowIndex: 2 Value: $'''B5コピー用紙'''
+Variables.CreateNewList List=> List
+Variables.AddItemToList Item: $'''0004''' List: List
+Variables.AddItemToList Item: $'''A4コピー用紙''' List: List
+Variables.AddItemToList Item: $'''500枚''' List: List
+Variables.AddRowToDataTable.AppendRowToDataTable DataTable: DataTable RowToAdd: List
+Variables.DeleteRowFromDataTable DataTable: DataTable RowIndex: 1
+Variables.FindOrReplaceInDataTable.FindItemInDataTableByColumnIndex DataTable: DataTable AllMatches: True ValueToFind: $'''0004''' MatchCase: False MatchEntireCellContents: False ColumnNameOrIndex: $'''品番''' DataTableMatches=> DataTableMatches
+Text.ToNumber Text: DataTableMatches[0]['Row'] Number=> RowIndex
+Display.ShowMessageDialog.ShowMessage Title: $'''備品情報''' Message: $'''品目：%DataTable[RowIndex]['品名']%
+発注単位：%DataTable[RowIndex]['発注単位']%''' Icon: Display.Icon.None Buttons: Display.Buttons.OK DefaultButton: Display.DefaultButton.Button1 IsTopMost: False ButtonPressed=> ButtonPressed
+Variables.SortDataTable.SortWithColumnName DataTable: DataTable ColumnName: $'''品番''' Order: Variables.SortDirection.Descending
+Variables.FilterDataTable DataTable: DataTable FilterParameters: { ^['RULE', 'COLUMN', 'OPERATOR', 'VALUE'], [$'''''', $'''品名''', $'''Equal''', $'''B5コピー用紙'''] } FilteredDataTable=> FilteredDataTable

@@ -1,0 +1,19 @@
+Excel.LaunchExcel.LaunchAndOpenUnderExistingProcess Path: $'''C:\\Users\\takumi.shibuya\\Desktop\\在庫リスト.xlsx''' Visible: True ReadOnly: False Instance=> ExcelInstance
+Excel.SetActiveWorksheet.ActivateWorksheetByName Instance: ExcelInstance Name: $'''在庫リスト'''
+Excel.ReadFromExcel.ReadAllCells Instance: ExcelInstance ReadAsText: False FirstLineIsHeader: True RangeValue=> ExcelData
+Excel.CloseExcel.Close Instance: ExcelInstance
+Excel.LaunchExcel.LaunchAndOpenUnderExistingProcess Path: $'''C:\\Users\\takumi.shibuya\\Desktop\\発注書.xlsx''' Visible: True ReadOnly: False Instance=> ExcelInstance
+SET RowIndex TO 19
+LOOP FOREACH CurrentItem IN ExcelData
+    Text.ToNumber Text: CurrentItem['数量'] Number=> Quantity
+    Text.ToNumber Text: CurrentItem['再発注の数量'] Number=> Quantity2
+    IF Quantity <= Quantity2 THEN
+        Excel.WriteToExcel.WriteCell Instance: ExcelInstance Value: CurrentItem['品番'] Column: $'''A''' Row: RowIndex
+        Excel.WriteToExcel.WriteCell Instance: ExcelInstance Value: CurrentItem['品名'] Column: $'''B''' Row: RowIndex
+        Excel.WriteToExcel.WriteCell Instance: ExcelInstance Value: CurrentItem['単価'] Column: $'''C''' Row: RowIndex
+        Variables.IncreaseVariable Value: RowIndex IncrementValue: 1
+    END
+END
+DateTime.GetCurrentDateTime.Local DateTimeFormat: DateTime.DateTimeFormat.DateOnly CurrentDateTime=> CurrentDateTime
+Text.ConvertDateTimeToText.FromDateTime DateTime: CurrentDateTime StandardFormat: Text.WellKnownDateTimeFormat.LongDate Result=> FormattedDateTime
+Excel.CloseExcel.CloseAndSaveAs Instance: ExcelInstance DocumentFormat: Excel.ExcelFormat.FromExtension DocumentPath: $'''C:\\Users\\takumi.shibuya\\Desktop\\%FormattedDateTime%発注書.xlsx'''
